@@ -53,6 +53,7 @@ phases:
       - export AWS_DEFAULT_REGION=us-east-1
       - export AWS_SDK_LOAD_CONFIG=1
       - aws eks update-kubeconfig --region $AWS_REGION --name ecom-cluster
+      - aws sts get-caller-identity
       - kubectl get nodes
 
       - echo "Deploy to EKS"
