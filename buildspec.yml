@@ -42,7 +42,12 @@ phases:
       - echo "Push image to ECR"
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
 
+
+      - export AWS_REGION=us-east-1
+      - export AWS_DEFAULT_REGION=us-east-1
+      - export AWS_SDK_LOAD_CONFIG=1
+      - aws eks update-kubeconfig --region $AWS_REGION --name ecom-cluster
+      - kubectl get nodes
+
       - echo "Deploy to EKS"
-      - aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-      - kubectl set image deployment/ecom-config-server \
-        ecom-config-server=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+      - kubectl set image deployment/ecom-config-server ecom-config-server=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
