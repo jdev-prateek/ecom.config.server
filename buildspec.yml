@@ -1,18 +1,41 @@
 version: "0.2"
+
+env:
+  variables:
+    IMAGE_NAME: ecom-config-server
+    CLUSTER_NAME: my-eks-cluster
+    AWS_REGION: us-east-1
+
 phases:
   pre_build:
     commands:
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 011528268164.dkr.ecr.us-east-1.amazonaws.com
+      - echo "Login to ECR"
+      - aws ecr get-login-password --region $AWS_REGION |
+        docker login --username AWS --password-stdin \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      - echo "Set image tag"
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+
   build:
     commands:
-      - java -version
-
-      - echo Build Spring Boot application
+      - echo "Build Spring Boot app"
+      - chmod +x mvnw
       - ./mvnw clean package -DskipTests
 
-      - docker build -t $ImageName -f ./Dockerfile .
-      - docker images
+      - echo "Build Docker image"
+      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+
+      - docker tag $IMAGE_NAME:$IMAGE_TAG \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+
   post_build:
     commands:
-      - docker tag $ImageName:latest 011528268164.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
-      - docker push 011528268164.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
+      - echo "Push image to ECR"
+      - docker push \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+
+      - echo "Deploy to EKS"
+      - aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+      - kubectl set image deployment/ecom-config-server \
+        ecom-config-server=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
