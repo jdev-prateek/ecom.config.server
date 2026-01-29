@@ -5,6 +5,10 @@ phases:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 011528268164.dkr.ecr.us-east-1.amazonaws.com
   build:
     commands:
+      - export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
+      - export PATH=$JAVA_HOME/bin:$PATH
+      - java -version
+
       - echo Build Spring Boot application
       - ./mvnw clean package -DskipTests
 
