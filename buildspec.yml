@@ -25,14 +25,12 @@ phases:
       - echo "Build Docker image"
       - docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
-      - docker tag $IMAGE_NAME:$IMAGE_TAG \
-        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+      - docker tag $IMAGE_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
 
   post_build:
     commands:
       - echo "Push image to ECR"
-      - docker push \
-        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
 
       - echo "Deploy to EKS"
       - aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
