@@ -1,0 +1,16 @@
+version: "0.2"
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 011528268164.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo Build Spring Boot application
+      - ./mvnw clean package -DskipTests
+
+      - docker build -t $ImageName -f ./Dockerfile .
+      - docker images
+  post_build:
+    commands:
+      - docker tag $ImageName:latest 011528268164.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
+      - docker push 011528268164.dkr.ecr.us-east-1.amazonaws.com/$ImageName:latest
