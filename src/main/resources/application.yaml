@@ -2,15 +2,18 @@ spring:
   application:
     name: ecom.config.server
   profiles:
-    active: native
+    active: git
   cloud:
     config:
       server:
-        native:
-          search-locations:
-            - 'file:./ecom-config-store/{application}/{profile}/'
-            - 'file:./ecom-config-store/{application}/'
-            - 'file:./ecom-config-store/{application}/i18n/'
+        git:
+          uri: https://github.com/jdev-prateek/ecom-config-store
+          default-label: master
+          clone-on-start: true
+          force-pull: true
+          search-paths:
+            - "{application}"
+
 
 server:
   port: 8080
