@@ -3,7 +3,7 @@ version: "0.2"
 env:
   variables:
     IMAGE_NAME: ecom-config-server
-    CLUSTER_NAME: my-eks-cluster
+    CLUSTER_NAME: ecom-cluster
     AWS_REGION: us-east-1
 
 phases:
