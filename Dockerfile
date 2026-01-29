@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/eclipse-temurin:17-jre
+FROM public.ecr.aws/docker/library/eclipse-temurin:21-jre
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
