@@ -7,20 +7,22 @@ pipeline {
     }
 
     stages {
-        stage("Build"){
+        stage("Build") {
             steps {
                 sh '''
-                echo $PWD
-                ls
-                chmod +x mvnw
+                echo "Maven build ..."
+                echo "Current working dir: ${$PWD}"                               
+                chmod +x mvnw                                
                 ./mvnw clean package
                 '''
             }
         }
 
-        stage('Hello') {
+        stage('Test') {
             steps {
-                echo 'Hello World US-0006'
+                sh '''
+                ./mvnw test
+                '''
             }
         }
     }
