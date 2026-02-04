@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         ECR_REPO_NAME = 'ecom/ecom-config-server'
+        APP_VERSION = '1.2.0'
+        ARTIFACT_VERSION = "${APP_VERSION}:${BRANCH_NAME}-build-${BUILD_NUMBER}"
     }
 
     stages {
@@ -15,12 +17,13 @@ pipeline {
             }
 
             steps {
-                sh '''                
+                sh '''
+                echo ${ARTIFACT_NAME}               
                 echo "Maven build ..."
                 echo ${ECR_REPO_URL}
                 echo "Current working dir: ${PWD}"                               
                 chmod +x mvnw                                
-                ./mvnw versions:set -DnewVersion=1.0.0-${BRANCH_NAME}-${BUILD_NUMBER}
+                ./mvnw versions:set -DnewVersion=${ARTIFACT_VERSION}
                 ./mvnw clean package -DskipTests
                 '''
             }
@@ -48,7 +51,7 @@ pipeline {
                         // 1. Build the Docker image
                         // Note: You need the 'docker' CLI installed in your agent for this to work.
                         // If the maven image doesn't have 'docker', this part will fail next.
-                        def customImage = docker.build("${ECR_REPO_URL}/${ECR_REPO_NAME}:${BRANCH_NAME}-${BUILD_NUMBER}")
+                        def customImage = docker.build("${ECR_REPO_URL}/${ECR_REPO_NAME}:${ARTIFACT_VERSION}")
 
                         // 2. Push the image
                         customImage.push()
