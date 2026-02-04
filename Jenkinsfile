@@ -11,6 +11,7 @@ pipeline {
                 sh '''
                 echo $PWD
                 ls
+                chmod +x mvnw
                 ./mvnw clean package
                 '''
             }
