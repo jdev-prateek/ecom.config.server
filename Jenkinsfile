@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'maven:3.9.6-eclipse-temurin-21'
+            args '-e HOME=.'
         }
     }
 
@@ -12,7 +13,6 @@ pipeline {
                 echo $PWD
                 ls
                 chmod +x mvnw
-                ./mvnw -Dmaven.repo.local=./.m2/repository clean package
                 ./mvnw clean package
                 '''
             }
