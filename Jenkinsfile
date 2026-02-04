@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Maven build ..."
-                echo "Current working dir: ${$PWD}"                               
+                echo "Current working dir: ${PWD}"                               
                 chmod +x mvnw                                
                 ./mvnw clean package
                 '''
