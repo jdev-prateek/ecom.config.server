@@ -2,9 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage("checkout"){
+        stage("Build"){
             steps {
-                checkout scm
+                sh '''
+                echo $PWD
+                ls
+                ./mvnw clean package
+                '''
             }
         }
 
