@@ -12,6 +12,7 @@ pipeline {
                 echo $PWD
                 ls
                 chmod +x mvnw
+                ./mvnw -Dmaven.repo.local=./.m2/repository clean package
                 ./mvnw clean package
                 '''
             }
