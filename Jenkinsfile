@@ -15,8 +15,16 @@ pipeline {
                         // This prevents "feature/login" from breaking Docker tags
                         def safeBranch = env.BRANCH_NAME.replaceAll("/", "-")
 
-                        // 2. define the Global Version variable for this run
-                        env.ARTIFACT_VERSION = "${env.APP_VERSION}-${safeBranch}-${env.BUILD_NUMBER}"
+                        // 2. CHECK FOR ORCHESTRATOR PARAMETER
+                        if (params.FORCE_VERSION) {
+                            // If Master Release triggered this, use that version exactly
+                            env.ARTIFACT_VERSION = params.FORCE_VERSION
+                            echo "⚠️ Overriding version via Release Train: ${env.ARTIFACT_VERSION}"
+                        } else {
+                            // Standard Dev build: Use automatic versioning
+                            env.ARTIFACT_VERSION = "${env.APP_VERSION}-${safeBranch}-${env.BUILD_NUMBER}"
+                            echo "Standard Build Version: ${env.ARTIFACT_VERSION}"
+                        }
                     }
                 }
             }
