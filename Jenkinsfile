@@ -4,15 +4,29 @@ pipeline {
     environment {
         ECR_REPO_NAME = 'ecom/ecom-config-server'
         APP_VERSION = '1.2.0'
-        ARTIFACT_VERSION = "${APP_VERSION}:${BRANCH_NAME}-build-${BUILD_NUMBER}"
     }
 
     stages {
+        stage("Initialize") {
+            steps {
+                script {
+                    script {
+                        // 1. Sanitize Branch Name (replace / with -)
+                        // This prevents "feature/login" from breaking Docker tags
+                        def safeBranch = env.BRANCH_NAME.replaceAll("/", "-")
+
+                        // 2. define the Global Version variable for this run
+                        env.ARTIFACT_VERSION = "${env.APP_VERSION}-${safeBranch}-${env.BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
+
         stage("Build") {
             agent {
                 docker {
                     image 'maven:3.9.6-eclipse-temurin-21'
-                    args '-e HOME=.'
+                    args '-e HOME=. -v /root/.m2:/root/.m2'
                 }
             }
 
@@ -36,6 +50,13 @@ pipeline {
         }
 
         stage('Test') {
+            agent {
+                docker {
+                    image 'maven:3.9.6-eclipse-temurin-21'
+                    args '-e HOME=. -v /root/.m2:/root/.m2'
+                }
+            }
+
             steps {
                 sh '''
                 ./mvnw test
